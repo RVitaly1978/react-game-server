@@ -1,1 +1,1 @@
-# react-game-backend
+# react-game-server
