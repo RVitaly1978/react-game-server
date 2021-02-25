@@ -4,6 +4,7 @@ const express = require('express');
 const loginRouter = require('./login-router');
 const registrationRouter = require('./registration-router');
 const userRouter = require('./user-router');
+const authMiddleware = require('../middleware/auth-middleware');
 
 const router = express.Router();
 router.use(
@@ -15,6 +16,6 @@ router.use(
   registrationRouter
 );
 router.use('/login', loginRouter);
-router.use('/user', userRouter);
+router.use('/user', authMiddleware, userRouter);
 
 module.exports = router;
