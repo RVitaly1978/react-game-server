@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const generateAccessToken = require('../utils/generateAccessToken');
 // const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
@@ -26,7 +27,8 @@ exports.registration = async (req, res, next) => {
 
     await user.save();
 
-    return res.json({ message: 'The user is registered successfully' });
+    const token = generateAccessToken(user._id, email);
+    return res.json({ token });
   } catch (e) {
     return next(ApiError.badRequest('Registration error'));
   }

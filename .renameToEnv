@@ -1,0 +1,6 @@
+PORT=5000
+DB_NAME=reactGame
+DB_USER=reactGame
+DB_PASSWORD=reactGame
+HASH_SALT=3
+TOKEN_SECRET_KEY=very_secret_key

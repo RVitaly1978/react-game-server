@@ -1,16 +1,8 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const ApiError = require('../error/api-error');
-
-const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
-const TOKEN_EXPIRES_IN = '24h';
-
-const generateAccessToken = (id) => {
-  const payload = { id };
-  return jwt.sign(payload, TOKEN_SECRET_KEY, { expiresIn: TOKEN_EXPIRES_IN});
-};
+const generateAccessToken = require('../utils/generateAccessToken');
 
 exports.login = async (req, res, next) => {
   try {
@@ -21,14 +13,21 @@ exports.login = async (req, res, next) => {
       return next(ApiError.badRequest(`The user with ${email} is not found`));
     }
 
-    const validPassword = bcrypt.compareSync(password, user.password);
-    if (!validPassword) {
+    const isValidPassword = bcrypt.compareSync(password, user.password);
+    if (!isValidPassword) {
       return next(ApiError.badRequest('The password is invalid'));
     }
 
-    const token = generateAccessToken(user._id);
+    const token = generateAccessToken(user._id, email);
     return res.json({ token });
   } catch (e) {
     return next(ApiError.badRequest('Login error'));
   }
+};
+
+exports.check = async (req, res, next) => {
+  const { id, email } = req.user;
+
+  const token = generateAccessToken(id, email);
+  return res.json({ token });
 };

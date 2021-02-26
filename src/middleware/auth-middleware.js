@@ -12,15 +12,19 @@ module.exports = (req, res, next) => {
   try {
     const { authorization } = req.headers;
     if (!authorization) {
-      return next(ApiError.forbidden('Auth error: the user is not logged in'));
+      return next(ApiError.unauthorized('Auth error: the user is not authorized'));
     }
 
     const token = authorization.split(' ')[1];
+    if (!token) {
+      return next(ApiError.unauthorized('Auth error: the user is not authorized'));
+    }
+
     const decodedData = jwt.verify(token, TOKEN_SECRET_KEY);
     req.user = decodedData;
 
     next();
   } catch (e) {
-    return next(ApiError.forbidden('Auth error: the user is not logged in'));
+    return next(ApiError.unauthorized('Auth error: the user is not authorized'));
   }
 };
