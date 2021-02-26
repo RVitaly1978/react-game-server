@@ -8,11 +8,12 @@ const DEFAULT_LIMIT_ITEMS = 10;
 
 exports.setGameResult = async (req, res, next) => {
   try {
-    const { time, score, username } = req.body;
+    const { id } = req.user;
+    const { time, score } = req.body;
 
     const game = new Game({ _id: new Types.ObjectId(), time, score, date: new Date() });
     await game.save();
-    await User.findOneAndUpdate({ username }, { $push: { statistics: game._id }});
+    await User.findByIdAndUpdate(id, { $push: { statistics: game._id }});
 
     return res.json({ message: 'The game results saved successfully' });
   } catch (e) {

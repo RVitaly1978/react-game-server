@@ -14,15 +14,16 @@ exports.registration = async (req, res, next) => {
     //   return next(ApiError.badRequest('Registration error: '));
     // }
 
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const candidate = await User.findOne({ username });
+    const candidate = await User.findOne({ email });
     if (candidate) {
-      return next(ApiError.badRequest('Registration error: a user with this name already exists'));
+      return next(ApiError.badRequest('Registration error: a user with this email already exists'));
     }
 
     const hashPassword = bcrypt.hashSync(password, HASH_SALT);
-    const user = new User({ username, password: hashPassword });
+    const user = new User({ email, password: hashPassword });
+
     await user.save();
 
     return res.json({ message: 'The user is registered successfully' });

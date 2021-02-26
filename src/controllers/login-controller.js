@@ -14,11 +14,11 @@ const generateAccessToken = (id) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
-      return next(ApiError.badRequest(`The user ${username} is not found`));
+      return next(ApiError.badRequest(`The user with ${email} is not found`));
     }
 
     const validPassword = bcrypt.compareSync(password, user.password);

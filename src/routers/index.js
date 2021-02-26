@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(
   '/registration',
   // [
-  //   check('username', 'The user name cannot be empty').notEmpty,
+  //   check('email', 'The user email cannot be empty').notEmpty,
   //   check('password', 'The password must be between 4 and 10 characters long').isLength({ min: 4, max: 10 }),
   // ],
   registrationRouter
