@@ -36,7 +36,12 @@ exports.getUsersHighScores = async (req, res, next) => {
   try {
     const { limit } = req.query || DEFAULT_LIMIT_ITEMS;
 
-    const games = await Game.find({}).sort({ score: -1 }).limit(Number(limit));
+    const highScoresGames = await Game.find({}).sort({ score: -1 }).limit(Number(limit));
+    const games = await Promise.all(highScoresGames.map(async (game) => {
+      const { email } = await User.findOne({ statistics: Types.ObjectId(game._id) });
+      return { ...game._doc, email };
+    }));
+
     return res.json({ games });
   } catch (e) {
     return next(ApiError.badRequest('User request error'));
