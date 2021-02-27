@@ -3,6 +3,7 @@ const { Types } = require('mongoose');
 const ApiError = require('../error/api-error');
 const Game = require('../models/game-statistics');
 const User = require('../models/user');
+const generateAccessToken = require('../utils/generateAccessToken');
 
 const DEFAULT_LIMIT_ITEMS = 10;
 
@@ -46,4 +47,11 @@ exports.getUsersHighScores = async (req, res, next) => {
   } catch (e) {
     return next(ApiError.badRequest('User request error'));
   }
+};
+
+exports.check = async (req, res, next) => {
+  const { id, email } = req.user;
+
+  const token = generateAccessToken(id, email);
+  return res.json({ token });
 };

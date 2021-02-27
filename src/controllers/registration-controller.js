@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const generateAccessToken = require('../utils/generateAccessToken');
-// const { validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 const ApiError = require('../error/api-error');
@@ -9,11 +9,11 @@ const HASH_SALT = Number(process.env.HASH_SALT);
 
 exports.registration = async (req, res, next) => {
   try {
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //   console.log(errors);
-    //   return next(ApiError.badRequest('Registration error: '));
-    // }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const errorsMsg = errors.array().map(({ msg }) => msg).join('. ');
+      return next(ApiError.badRequest(`Registration error: ${errorsMsg}`));
+    }
 
     const { email, password } = req.body;
 

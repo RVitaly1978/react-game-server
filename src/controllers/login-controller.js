@@ -24,10 +24,3 @@ exports.login = async (req, res, next) => {
     return next(ApiError.badRequest('Login error'));
   }
 };
-
-exports.check = async (req, res, next) => {
-  const { id, email } = req.user;
-
-  const token = generateAccessToken(id, email);
-  return res.json({ token });
-};

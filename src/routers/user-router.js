@@ -6,5 +6,6 @@ const userRouter = express.Router();
 userRouter.post('/game', userControllers.setGameResult);
 userRouter.get('/statistics', userControllers.getUserStatistics);
 userRouter.get('/records', userControllers.getUsersHighScores);
+userRouter.get('/auth', userControllers.check);
 
 module.exports = userRouter;
