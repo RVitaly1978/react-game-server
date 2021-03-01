@@ -1,11 +1,19 @@
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
+const Setting = require('../models/game-settings');
 const ApiError = require('../error/api-error');
 const generateAccessToken = require('../utils/generateAccessToken');
 
 exports.login = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const errorsMsg = errors.array().map(({ msg }) => msg).join('. ');
+      return next(ApiError.badRequest(`Login error: ${errorsMsg}`));
+    }
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
@@ -18,8 +26,10 @@ exports.login = async (req, res, next) => {
       return next(ApiError.badRequest('The password is invalid'));
     }
 
+    const settings = await Setting.findOne({ owner: user._id }).select('-_id -owner');
+
     const token = generateAccessToken(user._id, email);
-    return res.json({ token });
+    return res.json({ token, settings });
   } catch (e) {
     return next(ApiError.badRequest('Login error'));
   }

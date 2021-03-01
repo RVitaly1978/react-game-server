@@ -3,6 +3,7 @@ const generateAccessToken = require('../utils/generateAccessToken');
 const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
+const Setting = require('../models/game-settings');
 const ApiError = require('../error/api-error');
 
 const HASH_SALT = Number(process.env.HASH_SALT);
@@ -15,17 +16,20 @@ exports.registration = async (req, res, next) => {
       return next(ApiError.badRequest(`Registration error: ${errorsMsg}`));
     }
 
-    const { email, password } = req.body;
+    const { email, password, settings } = req.body;
 
     const candidate = await User.findOne({ email });
     if (candidate) {
-      return next(ApiError.badRequest('Registration error: a user with this email already exists'));
+      return next(ApiError.badRequest(`Registration error: a user with ${email} already exists`));
     }
 
     const hashPassword = bcrypt.hashSync(password, HASH_SALT);
     const user = new User({ email, password: hashPassword });
 
     await user.save();
+
+    const setting = new Setting({ ...settings, owner: user._id });
+    await setting.save();
 
     const token = generateAccessToken(user._id, email);
     return res.json({ token });
