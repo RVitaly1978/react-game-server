@@ -1,10 +1,8 @@
-const { Types } = require('mongoose');
-
 const ApiError = require('../error/api-error');
 const Game = require('../models/game');
 const User = require('../models/user');
 const Setting = require('../models/setting');
-// const Option = require('../models/option');
+const Option = require('../models/option');
 const generateAccessToken = require('../utils/generateAccessToken');
 
 const DEFAULT_LIMIT_ITEMS = 10;
@@ -12,14 +10,16 @@ const DEFAULT_LIMIT_ITEMS = 10;
 exports.setGameResult = async (req, res, next) => {
   try {
     const { id } = req.user;
-    const results = req.body;
+    const { result, settings, options } = req.body;
 
-    const game = new Game({ ...results, owner: id });
+    const game = new Game({ ...result, owner: id });
     await game.save();
+    await Setting.updateOne({ owner: id }, { ...settings });
+    await Option.updateOne({ owner: id }, { ...options });
 
     return res.json({ message: 'The game results saved successfully' });
   } catch (e) {
-    return next(ApiError.badRequest('User request error'));
+    return next(ApiError.badRequest('Error saving results'));
   }
 };
 
