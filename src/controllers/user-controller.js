@@ -1,9 +1,10 @@
 const { Types } = require('mongoose');
 
 const ApiError = require('../error/api-error');
-const Game = require('../models/game-statistics');
+const Game = require('../models/game');
 const User = require('../models/user');
-const Setting = require('../models/game-settings');
+const Setting = require('../models/setting');
+// const Option = require('../models/option');
 const generateAccessToken = require('../utils/generateAccessToken');
 
 const DEFAULT_LIMIT_ITEMS = 10;
