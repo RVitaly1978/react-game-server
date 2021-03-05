@@ -23,7 +23,7 @@ exports.setGameResult = async (req, res, next) => {
   }
 };
 
-exports.setUserOptions = async (req, res, next) => {
+exports.setOptions = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { options, settings } = req.body;
@@ -37,7 +37,7 @@ exports.setUserOptions = async (req, res, next) => {
   }
 };
 
-exports.getUserStatistics = async (req, res, next) => {
+exports.getStatistics = async (req, res, next) => {
   try {
     const { id } = req.user;
 
@@ -49,7 +49,7 @@ exports.getUserStatistics = async (req, res, next) => {
   }
 };
 
-exports.getUsersHighScores = async (req, res, next) => {
+exports.getHighScores = async (req, res, next) => {
   try {
     const { limit } = req.query || DEFAULT_LIMIT_ITEMS;
 
