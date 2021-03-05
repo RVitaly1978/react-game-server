@@ -39,11 +39,13 @@ exports.setOptions = async (req, res, next) => {
 
 exports.getStatistics = async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { id, email } = req.user;
 
-    const data = await Game.find({ owner: id });
+    await Game.find({ owner: id }).lean().exec((err, doc) => {
+      const data = doc.map((el) => ({ ...el, email }));
+      return res.json(data);
+    });
 
-    return res.json(data);
   } catch (e) {
     return next(ApiError.badRequest('User request error'));
   }
@@ -53,10 +55,11 @@ exports.getHighScores = async (req, res, next) => {
   try {
     const { limit } = req.query || DEFAULT_LIMIT_ITEMS;
 
-    const highScoresGames = await Game.find({}).sort({ moves: 1 }).limit(Number(limit));
+    const highScoresGames = await Game.find({}).sort({ moves: 1, time: 1 }).limit(Number(limit));
+
     const games = await Promise.all(highScoresGames.map(async (game) => {
       const { email } = await User.findById(game.owner);
-      return { ...game._doc, owner: email };
+      return { ...game._doc, email };
     }));
 
     return res.json(games);
