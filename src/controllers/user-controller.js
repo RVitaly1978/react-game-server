@@ -23,25 +23,15 @@ exports.setGameResult = async (req, res, next) => {
   }
 };
 
-exports.setUserSettings = async (req, res, next) => {
+exports.setUserOptions = async (req, res, next) => {
   try {
     const { id } = req.user;
-    const settings = req.body;
+    const { options, settings } = req.body;
 
     await Setting.updateOne({ owner: id }, { ...settings });
+    await Option.updateOne({ owner: id }, { ...options });
 
-    return res.json({ message: 'The game settings saved successfully' });
-  } catch (e) {
-    return next(ApiError.badRequest('User request error'));
-  }
-};
-
-exports.getUserSettings = async (req, res, next) => {
-  try {
-    const { id } = req.user;
-
-    const data = await Setting.findOne({ owner: id }).select('-_id -owner');
-    return res.json(data);
+    return res.json({ message: 'The game options saved successfully' });
   } catch (e) {
     return next(ApiError.badRequest('User request error'));
   }
@@ -52,6 +42,7 @@ exports.getUserStatistics = async (req, res, next) => {
     const { id } = req.user;
 
     const data = await Game.find({ owner: id });
+
     return res.json(data);
   } catch (e) {
     return next(ApiError.badRequest('User request error'));
