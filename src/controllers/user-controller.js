@@ -58,8 +58,11 @@ exports.getHighScores = async (req, res, next) => {
     const highScoresGames = await Game.find({}).sort({ moves: 1, time: 1 }).limit(Number(limit));
 
     const games = await Promise.all(highScoresGames.map(async (game) => {
-      const { email } = await User.findById(game.owner);
-      return { ...game._doc, email };
+      const user = await User.findById(game.owner);
+      if (user) {
+        return { ...game._doc, email: user.email };
+      }
+      return { ...game._doc, email: '<DELETED>' };
     }));
 
     return res.json(games);
